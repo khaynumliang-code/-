@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录界面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background: url('bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 2;
+            width: 400px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 110px; 
+            margin-bottom: 5px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .main-title {
+            font-size: 56px;
+            font-weight: bold;
+            letter-spacing: 6px;
+            margin-bottom: 30px;
+            background: linear-gradient(to bottom, #fff6a5 0%, #ffcc00 50%, #b8860b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+        }
+
+        .input-group {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .input-group .icon {
+            font-size: 20px;
+            margin-right: 15px;
+            color: #fff;
+            opacity: 0.9;
+        }
+
+        .input-group input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 18px;
+            width: 100%;
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 35px;
+        }
+
+        .options a {
+            color: #ff4d4d;
+            text-decoration: none;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            accent-color: #d4a017;
+        }
+
+        .login-btn {
+            width: 180px;
+            height: 48px;
+            background: linear-gradient(to bottom, #ffe5b4, #d4a017);
+            border: none;
+            border-radius: 4px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #3d2b00;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: all 0.2s;
+        }
+
+        .login-btn:active {
+            transform: scale(0.96);
+            filter: brightness(0.9);
+        }
+
+        .footer {
+            margin-top: 25px;
+        }
+
+        .service {
+            color: #fff;
+            text-decoration: underline;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .copyright {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <img src="my_photo.jpg" alt="Logo" class="logo">
+
+    <h1 class="main-title">新金宝</h1>
+
+    <div class="input-group">
+        <span class="icon">👤</span>
+        <input type="text" id="username" value="jd62222" placeholder="账号">
+    </div>
+
+    <div class="input-group">
+        <span class="icon">🔒</span>
+        <input type="password" id="password" value="12345678" placeholder="密码">
+    </div>
+
+    <div class="options">
+        <label class="checkbox-item">
+            <input type="checkbox" id="agree"> 我同意
+        </label>
+        <a href="#">《服务与条款》</a>
+        <label class="checkbox-item">
+            <input type="checkbox" checked> 记住帐号
+        </label>
+    </div>
+
+    <button class="login-btn" id="loginBtn">登 录</button>
+
+    <div class="footer">
+        <a href="#" class="service">在线客服</a>
+        <p class="copyright">Copyright 2023-2035</p>
+    </div>
+</div>
+
+<script>
+    // 登录跳转脚本
+    document.getElementById('loginBtn').addEventListener('click', function() {
+        const agree = document.getElementById('agree').checked;
+        if (!agree) {
+            alert("请先勾选并同意《服务与条款》");
+            return;
+        }
+        // 跳转到大厅
+        window.location.href = 'home.html';
+    });
+</script>
+
+</body>
+</html>

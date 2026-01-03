@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>新金宝 - 游戏大厅</title>
+    <style>
+        /* ==================== 样式部分 (保持之前所有优化，不做变动) ==================== */
+        :root {
+            --gold-light: #ffe082;
+            --gold-main: #d4a017;
+            --bg-card: #2d2319;
+            --sidebar-width: 175px;
+            --right-panel-width: 290px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", sans-serif; }
+        
+        body {
+            background: radial-gradient(circle at center, #3d2b1a 0%, #000 100%);
+            color: #fff;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            height: 38px;
+            background: linear-gradient(to bottom, #4d3a24, #1a0f08);
+            display: flex; align-items: center; padding: 0 20px;
+            border-bottom: 1px solid var(--gold-main);
+        }
+        .marquee { flex: 1; color: var(--gold-light); font-weight: bold; font-size: 14px; }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            margin-left: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 15px;
+        }
+
+        .logo-raw { width: 110px; margin-bottom: 8px; }
+        .logo-raw img { width: 100%; display: block; filter: drop-shadow(0 0 8px rgba(255,224,130,0.5)); }
+
+        .account-info {
+            text-align: center;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+        .user-id { 
+            font-size: 15px; 
+            color: #ccc; 
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .user-id::before { content: "👤 "; font-size: 12px; margin-right: 4px; }
+        .user-money { 
+            color: var(--gold-light); 
+            font-size: 20px; 
+            font-weight: bold; 
+            text-shadow: 0 2px 4px #000;
+        }
+
+        .nav-group { width: 100%; }
+        .nav-btn {
+            width: 100%; height: 58px; margin-bottom: 12px; 
+            background: linear-gradient(to bottom, #7d5a3c, #3d2b1a);
+            border: 2px solid #8d6d4a; border-radius: 10px; color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6); transition: 0.2s;
+        }
+        .nav-btn.active {
+            background: linear-gradient(to bottom, #ffcc00, #b8860b);
+            color: #300; border-color: #fff;
+            box-shadow: 0 0 20px rgba(255,204,0,0.5);
+        }
+        .nav-btn:active { transform: scale(0.96); }
+
+        .game-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 12px;
+            padding: 10px 20px;
+        }
+
+        .game-card {
+            background: var(--bg-card);
+            border: 1px solid #5a4534;
+            display: flex; flex-direction: column;
+            overflow: hidden; border-radius: 8px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+        }
+        .game-card:hover {
+            transform: translateY(-10px);
+            filter: brightness(1.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,1), 0 0 12px rgba(212,160,23,0.4);
+        }
+
+        .card-header {
+            height: 28px; padding: 0 12px;
+            background: linear-gradient(to right, #4d3a24, #1a0f08);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 15px; color: var(--gold-light);
+        }
+
+        .road-map-raw { flex: 1; overflow: hidden; background: #fff; }
+        .road-map-raw img { width: 100%; height: 100%; display: block; object-fit: fill; }
+
+        .card-footer { height: 24px; background: #1a0f08; padding: 0 12px; font-size: 13px; color: #999; display: flex; align-items: center; }
+
+        .right-panel {
+            width: var(--right-panel-width);
+            padding: 0 50px 0 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .video-box { 
+            width: 100%; 
+            height: 140px; 
+            background: #000; 
+            border: 2px solid var(--gold-main); 
+            border-radius: 6px; 
+        }
+
+        .brand-area {
+            margin-top: auto; width: 100%; height: 90px;
+            border: 2px solid var(--gold-main); border-radius: 15px;
+            background: linear-gradient(135deg, #5a4534, #1a0f08);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 20px;
+        }
+        .brand-area h2 { font-size: 36px; color: #ffcc00; text-shadow: 0 3px 6px #000; }
+
+        .service-btn { text-align: center; color: var(--gold-light); font-size: 18px; padding-bottom: 20px; font-weight: bold; cursor: pointer; }
+
+        .footer-time {
+            position: absolute; bottom: 20px; left: 30px;
+            width: var(--sidebar-width); text-align: center;
+            font-size: 13px; color: #8d6d4a; font-weight: bold;
+        }
+
+        #game-room-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 9999; display: none; flex-direction: column;
+        }
+        .room-header-nav { 
+            height: 42px; background: #1a0f08; display: flex; align-items: center; 
+            justify-content: space-between; padding: 0 20px; border-bottom: 1px solid var(--gold-main);
+            color: var(--gold-light); font-size: 14px;
+        }
+        .room-body { 
+            flex: 1; background: radial-gradient(circle, #1a3a2a, #000); 
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-end; position: relative;
+        }
+
+        .room-bet-grid { width: 700px; height: 140px; display: flex; gap: 4px; margin-bottom: 20px; }
+        .room-bet-cell { 
+            flex: 1; border: 1px solid rgba(212,160,23,0.4); background: rgba(0,0,0,0.4); 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: 4px; cursor: pointer; position: relative; transition: 0.2s;
+        }
+        .room-bet-cell:hover { background: rgba(255,255,255,0.1); }
+        .room-bet-cell:active { transform: scale(0.98); }
+        .room-bet-cell b { font-size: 12px; color: #aaa; margin-bottom: 5px; pointer-events: none; }
+        .room-bet-cell span { font-size: 22px; font-weight: bold; pointer-events: none; }
+        .bet-amount-tag {
+            position: absolute; top: 5px; right: 5px; background: var(--gold-main);
+            color: #000; font-size: 12px; padding: 1px 5px; border-radius: 10px; font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5); display: none;
+        }
+
+        .room-chip-container { 
+            width: 100%; height: 95px; background: rgba(0,0,0,0.85); 
+            display: flex; align-items: center; justify-content: center; gap: 15px; border-top: 2px solid #333;
+        }
+        .chip-v { 
+            width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-size: 15px; font-weight: 900; cursor: pointer; position: relative;
+            box-shadow: 0 5px 0px #000, 0 8px 15px rgba(0,0,0,0.6);
+            transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28); user-select: none; color: #333;
+        }
+        .chip-v::before {
+            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 50%; padding: 4px;
+            background: repeating-conic-gradient(#fff 0deg 15deg, transparent 15deg 30deg, #fff 30deg 45deg, transparent 45deg 60deg);
+            -webkit-mask: radial-gradient(farthest-side, transparent 85%, white 86%); mask: radial-gradient(farthest-side, transparent 85%, white 86%); z-index: 2;
+        }
+        .chip-v::after {
+            content: ""; position: absolute; width: 68%; height: 68%; background: #fff; border-radius: 50%;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2), 0 0 2px rgba(0,0,0,0.5); z-index: 1;
+        }
+        .chip-v span { position: relative; z-index: 3; }
+        .chip-v.selected { transform: scale(1.15) translateY(-12px); box-shadow: 0 12px 0px #000, 0 20px 25px rgba(0,0,0,0.6); }
+
+        .c-10 { background: #ffffff; } .c-10::before { background: repeating-conic-gradient(#1a4a8e 0deg 15deg, transparent 15deg 45deg); }
+        .c-50 { background: #2e86de; } .c-100 { background: #333333; } .c-500 { background: #9b59b6; } .c-1000 { background: #f1c40f; }
+
+        .confirm-bet-btn {
+            background: linear-gradient(to bottom, #ffd700, #d4a017); border: 1px solid #fff; color: #300;
+            height: 45px; padding: 0 30px; font-weight: bold; border-radius: 25px; margin-left: 20px; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: 0.2s;
+        }
+        .confirm-bet-btn:active { transform: scale(0.9); }
+
+        .room-road-footer { height: 170px; background: #fff; width: 100%; display: flex; }
+        @keyframes spin-anim { to { transform: rotate(360deg); } }
+        .room-control-panel { position: absolute; top: 15px; right: 45px; display: flex; flex-direction: column; align-items: flex-end; z-index: 10000; }
+        .control-icons { display: flex; gap: 8px; margin-bottom: 5px; }
+        .icon-btn { width: 28px; height: 28px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--gold-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold-light); cursor: pointer; font-size: 14px; }
+        .exit-arrow-btn { width: 50px; height: 38px; background: var(--gold-main); clip-path: polygon(0% 20%, 60% 20%, 60% 0%, 100% 50%, 60% 100%, 60% 80%, 0% 80%); cursor: pointer; margin-left: 10px; }
+        .room-info-box { background: rgba(0, 0, 0, 0.8); border: 1px solid #444; padding: 8px 12px; border-radius: 4px; min-width: 170px; font-size: 13px; color: #ccc; line-height: 1.8; box-shadow: 0 4px 10px #000; }
+        .room-info-box div { display: flex; justify-content: space-between; }
+        .room-info-box span.val { color: var(--gold-light); }
+
+        /* 换桌按钮与菜单 */
+        .switch-tab-btn { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 32px; height: 110px; background: linear-gradient(to left, #4d3a24, #1a0f08); border: 1px solid var(--gold-main); border-right: none; border-radius: 8px 0 0 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--gold-light); font-weight: bold; cursor: pointer; z-index: 10001; }
+        #side-switch-menu { position: absolute; right: -240px; top: 0; width: 240px; height: 100%; background: rgba(26, 15, 8, 0.98); border-left: 1px solid var(--gold-main); transition: 0.3s ease; z-index: 10005; padding: 15px; overflow-y: auto; }
+        #side-switch-menu.active { right: 0; }
+        #side-switch-menu.active ~ .room-body .room-control-panel { right: 260px; }
+        .menu-item-card { display: flex; align-items: center; background: #2d2319; border: 1px solid #555; margin-bottom: 8px; padding: 5px; cursor: pointer; border-radius: 4px; }
+        .menu-item-card:hover { border-color: var(--gold-light); background: #3d2b1a; }
+        .menu-item-card b { color: var(--gold-light); width: 45px; text-align: center; font-size: 14px; }
+        .menu-item-card img { flex: 1; height: 40px; object-fit: cover; background: #fff; margin-left: 5px; border-radius: 2px; }
+    </style>
+</head>
+<body>
+
+    <div id="lobby-container" style="display: flex; flex-direction: column; height: 100%;">
+        <div class="top-bar">
+            <div class="marquee"><marquee>尊敬的贵宾您好！欢迎光临新金宝，祝您生活愉快，财源滚滚！</marquee></div>
+        </div>
+        <div class="main-container">
+            <div class="sidebar">
+                <div class="logo-raw"><img src="my_photo.jpg" alt="Logo"></div>
+                <div class="account-info">
+                    <div class="user-id">jd62222</div>
+                    <div class="user-money">💰 0.00</div>
+                </div>
+                <div class="nav-group">
+                    <div class="nav-btn active">全部</div>
+                    <div class="nav-btn">百家乐</div>
+                    <div class="nav-btn">龙虎</div>
+                    <div class="nav-btn">牛牛</div>
+                </div>
+            </div>
+            <div class="game-grid">
+                <div class="game-card" onclick="openRoom('G20')"> <div class="card-header"><span>G20</span><span style="color:#ff4444; font-weight:bold;">派彩中</span></div><div class="road-map-raw"><img src="myphoto.jpg"></div><div class="card-footer">庄 28 闲 25 和 3</div></div>
+                <div class="game-card" onclick="openRoom('N6')"> <div class="card-header"><span>N6</span><span>开牌</span></div><div class="road-map-raw"><img src="myphoto.jpg"></div><div class="card-footer">庄 22 闲 18 和 3</div></div>
+                <div class="game-card" onclick="openRoom('N8')"> <div class="card-header"><span>N8</span><span>下注中</span></div><div class="road-map-raw"><img src="myphoto.jpg"></div><div class="card-footer">庄 12 闲 13 和 6</div></div>
+                <div class="game-card" onclick="openRoom('G01')"> <div class="card-header"><span>G01</span><span>等待开牌</span></div><div class="road-map-raw"><img src="myphoto.jpg"></div><div class="card-footer">庄 12 闲 13 和 10</div></div>
+                <div class="game-card" onclick="openRoom('G02')"> <div class="card-header"><span>G02</span><span>洗牌中</span></div><div class="road-map-raw"><img src="myphoto.jpg"></div><div class="card-footer">庄 23 闲 20 和 29</div></div>
+                <div class="game-card" onclick="openRoom('G03')"> <div class="card-header"><span>G03</span><span>正在开牌</span></div><div class="road-map-raw"><img src="myphoto.jpg"></div><div class="card-footer">庄 12 闲 40 和 24</div></div>
+            </div>
+            <div class="right-panel">
+                <div class="video-box"></div>
+                <div class="video-box"></div>
+                <div class="brand-area"><h2>新金宝</h2></div>
+                <div class="service-btn">🎧 在线客服</div>
+            </div>
+        </div>
+        <div class="footer-time">2026-01-03<br>18:35:12</div>
+    </div>
+
+    <div id="game-room-overlay">
+        <div id="side-switch-menu">
+            <div style="color:var(--gold-light); text-align:center; margin-bottom:15px; border-bottom:1px solid #444; padding-bottom:10px;">快速换桌</div>
+            <div class="menu-item-card" onclick="doSwitch('G20')"><b>G20</b><img src="myphoto.jpg"></div>
+            <div class="menu-item-card" onclick="doSwitch('N6')"><b>N6</b><img src="myphoto.jpg"></div>
+            <div class="menu-item-card" onclick="doSwitch('N8')"><b>N8</b><img src="myphoto.jpg"></div>
+            <div class="menu-item-card" onclick="doSwitch('G01')"><b>G01</b><img src="myphoto.jpg"></div>
+            <div class="menu-item-card" onclick="doSwitch('G02')"><b>G02</b><img src="myphoto.jpg"></div>
+            <div class="menu-item-card" onclick="doSwitch('G03')"><b>G03</b><img src="myphoto.jpg"></div>
+            <div style="text-align:center; margin-top:20px; color:#666; cursor:pointer;" onclick="document.getElementById('side-switch-menu').classList.remove('active')">关闭 ↑</div>
+        </div>
+        
+        <div class="switch-tab-btn" onclick="document.getElementById('side-switch-menu').classList.toggle('active')"><span>换</span><span>桌</span></div>
+
+        <div class="room-header-nav">
+            <div id="room-active-title">房间：N6 | 限红：10-5000</div>
+            <button onclick="document.getElementById('game-room-overlay').style.display='none'" style="background:var(--gold-main); border:none; padding:5px 15px; font-weight:bold; cursor:pointer; border-radius:3px;">返回大厅</button>
+        </div>
+
+        <div class="room-body">
+            <div class="room-control-panel">
+                <div style="display: flex; align-items: center;">
+                    <div class="control-icons">
+                        <div class="icon-btn">▼</div><div class="icon-btn">📅</div><div class="icon-btn">？</div><div class="icon-btn">⛶</div><div class="icon-btn">⚙</div>
+                    </div>
+                    <div class="exit-arrow-btn" onclick="document.getElementById('game-room-overlay').style.display='none'"></div>
+                </div>
+                <div class="room-info-box">
+                    <div>房间：<span class="val" id="info-room-id">N6</span></div>
+                    <div>场次：<span class="val">第8182-12局</span></div>
+                    <div>限红：<span class="val">10-5000</span></div>
+                    <div>余额：<span class="val">0.00</span></div>
+                    <div>已下注：<span class="val" id="total-bet-val">0</span></div>
+                </div>
+            </div>
+
+            <div style="position:absolute; top:35%; text-align:center;">
+                <div style="width:60px; height:60px; border:5px solid var(--gold-main); border-top-color:transparent; border-radius:50%; animation: spin-anim 1.2s linear infinite; margin:0 auto;"></div>
+                <p style="color:var(--gold-light); margin-top:15px; font-size:18px;">正在派彩...</p>
+            </div>
+
+            <div class="room-bet-grid">
+                <div class="room-bet-cell" onclick="placeBet(this, '闲对')" style="color:#4a90e2;"><b>1:11</b><span>闲对</span><div class="bet-amount-tag">0</div></div>
+                <div class="room-bet-cell" onclick="placeBet(this, '闲')" style="color:#4a90e2;"><b>1:1</b><span>闲</span><div class="bet-amount-tag">0</div></div>
+                <div class="room-bet-cell" onclick="placeBet(this, '和')" style="color:#2ecc71;"><b>1:8</b><span>和</span><div class="bet-amount-tag">0</div></div>
+                <div class="room-bet-cell" onclick="placeBet(this, '庄')" style="color:#e74c3c;"><b>1:1</b><span>庄</span><div class="bet-amount-tag">0</div></div>
+                <div class="room-bet-cell" onclick="placeBet(this, '庄对')" style="color:#e74c3c;"><b>1:11</b><span>庄对</span><div class="bet-amount-tag">0</div></div>
+            </div>
+
+            <div class="room-chip-container">
+                <div class="chip-v c-10" onclick="selectChip(this)"><span>10</span></div>
+                <div class="chip-v c-50" onclick="selectChip(this)"><span>50</span></div>
+                <div class="chip-v c-100 selected" onclick="selectChip(this)"><span>100</span></div>
+                <div class="chip-v c-500" onclick="selectChip(this)"><span>500</span></div>
+                <div class="chip-v c-1000" onclick="selectChip(this)"><span>1000</span></div>
+                <button class="confirm-bet-btn" onclick="confirmBets()">确定</button>
+            </div>
+        </div>
+
+        <div class="room-road-footer">
+            <div style="width:120px; background:#2d2319; color:#fff; padding:20px; font-size:15px; line-height:2;">庄 <span style="float:right; color:#e74c3c;">24</span><br>闲 <span style="float:right; color:#4a90e2;">22</span><br>和 <span style="float:right; color:#2ecc71;">9</span></div>
+            <div style="flex:1;"><img src="露珠.jpg" style="width:100%; height:100%; object-fit:fill;"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentChipValue = 100;
+        let totalBetAmount = 0;
+
+        // 统一打开房间函数
+        function openRoom(name) {
+            doSwitch(name);
+            document.getElementById('game-room-overlay').style.display = 'flex';
+        }
+
+        // 核心逻辑：切换房间
+        function doSwitch(name) {
+            // 更新标题和信息框
+            document.getElementById('room-active-title').innerText = '房间：' + name + ' | 限红：10-5000';
+            document.getElementById('info-room-id').innerText = name;
+            
+            // 关闭侧边菜单
+            document.getElementById('side-switch-menu').classList.remove('active');
+            
+            // 切换桌子时自动清空当前未确定的注单
+            resetTable();
+            console.log("已快速切换至房间: " + name);
+        }
+
+        function selectChip(el) {
+            const chips = el.parentElement.querySelectorAll('.chip-v');
+            chips.forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            currentChipValue = parseInt(el.innerText);
+        }
+
+        function placeBet(cell, type) {
+            const tag = cell.querySelector('.bet-amount-tag');
+            let currentCellAmount = parseInt(tag.innerText);
+            currentCellAmount += currentChipValue;
+            totalBetAmount += currentChipValue;
+            tag.innerText = currentCellAmount;
+            tag.style.display = 'block';
+            document.getElementById('total-bet-val').innerText = totalBetAmount;
+        }
+
+        function confirmBets() {
+            if(totalBetAmount === 0) { alert("请先下注！"); return; }
+            alert("下注成功！金额：" + totalBetAmount);
+            resetTable();
+        }
+
+        function resetTable() {
+            totalBetAmount = 0;
+            document.getElementById('total-bet-val').innerText = "0";
+            document.querySelectorAll('.bet-amount-tag').forEach(tag => {
+                tag.innerText = "0";
+                tag.style.display = 'none';
+            });
+        }
+    </script>
+</body>
+</html>
