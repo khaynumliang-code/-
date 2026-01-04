@@ -5,7 +5,7 @@
     <title>新金宝 - 游戏大厅</title>
     <link rel="icon" type="image/jpeg" href="my_photo.jpg">
     <style>
-        /* ==================== 样式部分 (保持之前所有优化，不做变动) ==================== */
+        /* ==================== 原有样式部分 (完全保留) ==================== */
         :root {
             --gold-light: #ffe082;
             --gold-main: #d4a017;
@@ -139,6 +139,7 @@
             background: #000; 
             border: 2px solid var(--gold-main); 
             border-radius: 6px; 
+            overflow: hidden; /* 保证视频/图片不超出圆角边框 */
         }
 
         .brand-area {
@@ -150,7 +151,22 @@
         }
         .brand-area h2 { font-size: 36px; color: #ffcc00; text-shadow: 0 3px 6px #000; }
 
-        .service-btn { text-align: center; color: var(--gold-light); font-size: 18px; padding-bottom: 20px; font-weight: bold; cursor: pointer; }
+        .service-btn { 
+            text-align: center; 
+            color: var(--gold-light); 
+            font-size: 18px; 
+            padding: 10px 0; 
+            margin-bottom: 20px;
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            border-radius: 5px;
+        }
+        .service-btn:hover {
+            color: #fff;
+            text-shadow: 0 0 10px var(--gold-light);
+            background: rgba(255, 224, 130, 0.1);
+        }
 
         .footer-time {
             position: absolute; bottom: 20px; left: 30px;
@@ -158,6 +174,7 @@
             font-size: 13px; color: #8d6d4a; font-weight: bold;
         }
 
+        /* ==================== 游戏房间层 (完全保留) ==================== */
         #game-room-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; z-index: 9999; display: none; flex-direction: column;
@@ -166,15 +183,53 @@
             height: 42px; background: #1a0f08; display: flex; align-items: center; 
             justify-content: space-between; padding: 0 20px; border-bottom: 1px solid var(--gold-main);
             color: var(--gold-light); font-size: 14px;
+            z-index: 10010;
         }
         .room-body { 
-            flex: 1; background: radial-gradient(circle, #1a3a2a, #000); 
+            flex: 1; background: #000; 
             display: flex; flex-direction: column; align-items: center; justify-content: flex-end; position: relative;
+            overflow: hidden;
         }
 
-        .room-bet-grid { width: 700px; height: 140px; display: flex; gap: 4px; margin-bottom: 20px; }
+        .full-video-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; 
+            object-fit: cover;
+        }
+
+        .room-top-right-group {
+            position: absolute;
+            top: 105px; 
+            right: 45px;
+            display: flex;
+            align-items: flex-end; 
+            gap: 15px;
+            z-index: 10002;
+            transition: transform 0.3s ease; 
+        }
+
+        #side-switch-menu.active ~ .room-top-right-group { transform: translateX(-250px); }
+        #side-switch-menu.active ~ .room-control-panel { transform: translateX(-250px); }
+
+        .monitor-item {
+            width: 260px; height: 146px; background: #000; border: 2px solid #444; border-radius: 4px;
+            overflow: hidden; cursor: pointer; position: relative; transition: 0.3s;
+        }
+        .monitor-item:hover { border-color: var(--gold-light); }
+        .monitor-item video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .monitor-tag { position: absolute; bottom: 2px; right: 2px; background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; padding: 1px 4px; border-radius: 2px; }
+
+        .room-info-box { 
+            background: rgba(0, 0, 0, 0.8); border: 1px solid #444; padding: 8px 12px; border-radius: 4px; 
+            min-width: 200px; font-size: 13px; color: #ccc; line-height: 1.8; box-shadow: 0 4px 10px #000; 
+        }
+        .room-info-box div { display: flex; justify-content: space-between; }
+        .room-info-box span.val { color: var(--gold-light); }
+
+        .room-bet-grid { width: 700px; height: 140px; display: flex; gap: 4px; margin-bottom: 20px; z-index: 10; }
         .room-bet-cell { 
-            flex: 1; border: 1px solid rgba(212,160,23,0.4); background: rgba(0,0,0,0.4); 
+            flex: 1; border: 1px solid rgba(212,160,23,0.4); background: rgba(0,0,0,0.6); 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             border-radius: 4px; cursor: pointer; position: relative; transition: 0.2s;
         }
@@ -182,6 +237,7 @@
         .room-bet-cell:active { transform: scale(0.98); }
         .room-bet-cell b { font-size: 12px; color: #aaa; margin-bottom: 5px; pointer-events: none; }
         .room-bet-cell span { font-size: 22px; font-weight: bold; pointer-events: none; }
+        
         .bet-amount-tag {
             position: absolute; top: 5px; right: 5px; background: var(--gold-main);
             color: #000; font-size: 12px; padding: 1px 5px; border-radius: 10px; font-weight: bold;
@@ -191,6 +247,7 @@
         .room-chip-container { 
             width: 100%; height: 95px; background: rgba(0,0,0,0.85); 
             display: flex; align-items: center; justify-content: center; gap: 15px; border-top: 2px solid #333;
+            z-index: 10;
         }
         .chip-v { 
             width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
@@ -213,28 +270,34 @@
         .c-10 { background: #ffffff; } .c-10::before { background: repeating-conic-gradient(#1a4a8e 0deg 15deg, transparent 15deg 45deg); }
         .c-50 { background: #2e86de; } .c-100 { background: #333333; } .c-500 { background: #9b59b6; } .c-1000 { background: #f1c40f; }
 
-        .confirm-bet-btn {
-            background: linear-gradient(to bottom, #ffd700, #d4a017); border: 1px solid #fff; color: #300;
+        .confirm-bet-btn, .cancel-bet-btn {
             height: 45px; padding: 0 30px; font-weight: bold; border-radius: 25px; margin-left: 20px; cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: 0.2s;
         }
-        .confirm-bet-btn:active { transform: scale(0.9); }
+        .confirm-bet-btn { background: linear-gradient(to bottom, #ffd700, #d4a017); border: 1px solid #fff; color: #300; }
+        .cancel-bet-btn { background: linear-gradient(to bottom, #666, #333); border: 1px solid #999; color: #eee; }
+        .confirm-bet-btn:active, .cancel-bet-btn:active { transform: scale(0.9); }
 
-        .room-road-footer { height: 170px; background: #fff; width: 100%; display: flex; }
-        @keyframes spin-anim { to { transform: rotate(360deg); } }
-        .room-control-panel { position: absolute; top: 15px; right: 45px; display: flex; flex-direction: column; align-items: flex-end; z-index: 10000; }
+        .room-road-footer { height: 170px; background: #fff; width: 100%; display: flex; z-index: 10; }
+        
+        .room-control-panel { 
+            position: absolute; top: 60px; right: 45px; 
+            display: flex; flex-direction: column; align-items: flex-end; 
+            z-index: 10005; 
+            transition: transform 0.3s ease; 
+        }
         .control-icons { display: flex; gap: 8px; margin-bottom: 5px; }
         .icon-btn { width: 28px; height: 28px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--gold-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold-light); cursor: pointer; font-size: 14px; }
         .exit-arrow-btn { width: 50px; height: 38px; background: var(--gold-main); clip-path: polygon(0% 20%, 60% 20%, 60% 0%, 100% 50%, 60% 100%, 60% 80%, 0% 80%); cursor: pointer; margin-left: 10px; }
-        .room-info-box { background: rgba(0, 0, 0, 0.8); border: 1px solid #444; padding: 8px 12px; border-radius: 4px; min-width: 170px; font-size: 13px; color: #ccc; line-height: 1.8; box-shadow: 0 4px 10px #000; }
-        .room-info-box div { display: flex; justify-content: space-between; }
-        .room-info-box span.val { color: var(--gold-light); }
 
-        /* 换桌按钮与菜单 */
         .switch-tab-btn { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 32px; height: 110px; background: linear-gradient(to left, #4d3a24, #1a0f08); border: 1px solid var(--gold-main); border-right: none; border-radius: 8px 0 0 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--gold-light); font-weight: bold; cursor: pointer; z-index: 10001; }
-        #side-switch-menu { position: absolute; right: -240px; top: 0; width: 240px; height: 100%; background: rgba(26, 15, 8, 0.98); border-left: 1px solid var(--gold-main); transition: 0.3s ease; z-index: 10005; padding: 15px; overflow-y: auto; }
+        
+        #side-switch-menu { 
+            position: absolute; right: -240px; top: 0; width: 240px; height: 100%; 
+            background: rgba(26, 15, 8, 0.98); border-left: 1px solid var(--gold-main); 
+            transition: 0.3s ease; z-index: 10005; padding: 15px; overflow-y: auto; 
+        }
         #side-switch-menu.active { right: 0; }
-        #side-switch-menu.active ~ .room-body .room-control-panel { right: 260px; }
         .menu-item-card { display: flex; align-items: center; background: #2d2319; border: 1px solid #555; margin-bottom: 8px; padding: 5px; cursor: pointer; border-radius: 4px; }
         .menu-item-card:hover { border-color: var(--gold-light); background: #3d2b1a; }
         .menu-item-card b { color: var(--gold-light); width: 45px; text-align: center; font-size: 14px; }
@@ -259,6 +322,7 @@
                     <div class="nav-btn">百家乐</div>
                     <div class="nav-btn">龙虎</div>
                     <div class="nav-btn">牛牛</div>
+                    <div class="nav-btn">多台下注</div>
                 </div>
             </div>
             <div class="game-grid">
@@ -269,11 +333,18 @@
                 <div class="game-card" onclick="openRoom('G02')"> <div class="card-header"><span>G02</span><span>洗牌中</span></div><div class="road-map-raw"><img src="myphoto.jpg"></div><div class="card-footer">庄 23 闲 20 和 29</div></div>
                 <div class="game-card" onclick="openRoom('G03')"> <div class="card-header"><span>G03</span><span>正在开牌</span></div><div class="road-map-raw"><img src="myphoto.jpg"></div><div class="card-footer">庄 12 闲 40 和 24</div></div>
             </div>
+
             <div class="right-panel">
-                <div class="video-box"></div>
-                <div class="video-box"></div>
+                <div class="video-box">
+                    <video src="球机.mp4" autoplay muted loop playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+                </div>
+
+                <div class="video-box">
+                    <img src="外框.jpg" style="width:100%; height:100%; object-fit:fill;">
+                </div>
+
                 <div class="brand-area"><h2>新金宝</h2></div>
-                <div class="service-btn">🎧 在线客服</div>
+                <div class="service-btn" onclick="openCustomerService()">🎧 在线客服</div>
             </div>
         </div>
         <div class="footer-time">2026-01-03<br>18:35:12</div>
@@ -290,8 +361,32 @@
             <div class="menu-item-card" onclick="doSwitch('G03')"><b>G03</b><img src="myphoto.jpg"></div>
             <div style="text-align:center; margin-top:20px; color:#666; cursor:pointer;" onclick="document.getElementById('side-switch-menu').classList.remove('active')">关闭 ↑</div>
         </div>
-        
+
         <div class="switch-tab-btn" onclick="document.getElementById('side-switch-menu').classList.toggle('active')"><span>换</span><span>桌</span></div>
+
+        <div class="room-top-right-group">
+            <div class="monitor-item" onclick="toggleView()">
+                <video id="monitor-preview" autoplay muted loop><source src="G01近.mp4" type="video/mp4"></video>
+                <div class="monitor-tag">切换视角</div>
+            </div>
+
+            <div class="room-info-box"> 
+                <div>房间：<span class="val" id="info-room-id">N6</span></div>
+                <div>场次：<span class="val">第8182-12局</span></div>
+                <div>限红：<span class="val">10-5000</span></div>
+                <div>余额：<span class="val">0.00</span></div>
+                <div>已下注：<span class="val" id="total-bet-val">0</span></div>
+            </div>
+        </div>
+
+        <div class="room-control-panel">
+            <div style="display: flex; align-items: center;">
+                <div class="control-icons">
+                    <div class="icon-btn">▼</div><div class="icon-btn">📅</div><div class="icon-btn">？</div><div class="icon-btn">⛶</div><div class="icon-btn">⚙</div>
+                </div>
+                <div class="exit-arrow-btn" onclick="document.getElementById('game-room-overlay').style.display='none'"></div>
+            </div>
+        </div>
 
         <div class="room-header-nav">
             <div id="room-active-title">房间：N6 | 限红：10-5000</div>
@@ -299,26 +394,9 @@
         </div>
 
         <div class="room-body">
-            <div class="room-control-panel">
-                <div style="display: flex; align-items: center;">
-                    <div class="control-icons">
-                        <div class="icon-btn">▼</div><div class="icon-btn">📅</div><div class="icon-btn">？</div><div class="icon-btn">⛶</div><div class="icon-btn">⚙</div>
-                    </div>
-                    <div class="exit-arrow-btn" onclick="document.getElementById('game-room-overlay').style.display='none'"></div>
-                </div>
-                <div class="room-info-box">
-                    <div>房间：<span class="val" id="info-room-id">N6</span></div>
-                    <div>场次：<span class="val">第8182-12局</span></div>
-                    <div>限红：<span class="val">10-5000</span></div>
-                    <div>余额：<span class="val">0.00</span></div>
-                    <div>已下注：<span class="val" id="total-bet-val">0</span></div>
-                </div>
-            </div>
-
-            <div style="position:absolute; top:35%; text-align:center;">
-                <div style="width:60px; height:60px; border:5px solid var(--gold-main); border-top-color:transparent; border-radius:50%; animation: spin-anim 1.2s linear infinite; margin:0 auto;"></div>
-                <p style="color:var(--gold-light); margin-top:15px; font-size:18px;">正在派彩...</p>
-            </div>
+            <video id="bg-video" class="full-video-bg" autoplay muted loop>
+                <source src="G01前.mp4" type="video/mp4">
+            </video>
 
             <div class="room-bet-grid">
                 <div class="room-bet-cell" onclick="placeBet(this, '闲对')" style="color:#4a90e2;"><b>1:11</b><span>闲对</span><div class="bet-amount-tag">0</div></div>
@@ -334,6 +412,8 @@
                 <div class="chip-v c-100 selected" onclick="selectChip(this)"><span>100</span></div>
                 <div class="chip-v c-500" onclick="selectChip(this)"><span>500</span></div>
                 <div class="chip-v c-1000" onclick="selectChip(this)"><span>1000</span></div>
+                
+                <button class="cancel-bet-btn" onclick="resetTable()">取消</button>
                 <button class="confirm-bet-btn" onclick="confirmBets()">确定</button>
             </div>
         </div>
@@ -345,27 +425,44 @@
     </div>
 
     <script>
+        /* 在线客服跳转 */
+        function openCustomerService() {
+            const serviceUrl = "chat.html"; 
+            window.open(serviceUrl, '_blank');
+        }
+
+        /* 脚本逻辑 (完全保留) */
         let currentChipValue = 100;
         let totalBetAmount = 0;
+        let betHistory = []; 
 
-        // 统一打开房间函数
+        let currentView = 'front'; 
+        function toggleView() {
+            const bgVideo = document.getElementById('bg-video');
+            const previewVideo = document.getElementById('monitor-preview');
+            if (currentView === 'front') {
+                bgVideo.src = 'G01近.mp4';
+                previewVideo.src = 'G01前.mp4';
+                currentView = 'close';
+            } else {
+                bgVideo.src = 'G01前.mp4';
+                previewVideo.src = 'G01近.mp4';
+                currentView = 'front';
+            }
+            bgVideo.play();
+            previewVideo.play();
+        }
+
         function openRoom(name) {
             doSwitch(name);
             document.getElementById('game-room-overlay').style.display = 'flex';
         }
 
-        // 核心逻辑：切换房间
         function doSwitch(name) {
-            // 更新标题和信息框
             document.getElementById('room-active-title').innerText = '房间：' + name + ' | 限红：10-5000';
             document.getElementById('info-room-id').innerText = name;
-            
-            // 关闭侧边菜单
             document.getElementById('side-switch-menu').classList.remove('active');
-            
-            // 切换桌子时自动清空当前未确定的注单
             resetTable();
-            console.log("已快速切换至房间: " + name);
         }
 
         function selectChip(el) {
@@ -383,6 +480,7 @@
             tag.innerText = currentCellAmount;
             tag.style.display = 'block';
             document.getElementById('total-bet-val').innerText = totalBetAmount;
+            betHistory.push({cell: cell, amount: currentChipValue});
         }
 
         function confirmBets() {
@@ -393,6 +491,7 @@
 
         function resetTable() {
             totalBetAmount = 0;
+            betHistory = []; 
             document.getElementById('total-bet-val').innerText = "0";
             document.querySelectorAll('.bet-amount-tag').forEach(tag => {
                 tag.innerText = "0";
@@ -401,5 +500,4 @@
         }
     </script>
 </body>
-
 </html>
