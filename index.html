@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>会员</title>
-    <link rel="icon" type="image/jpeg" href="my_photo.jpg">
+    <title>登录界面</title>
     <style>
         * {
             margin: 0;
@@ -85,7 +84,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 14px;
+            font-size: 16px; /* 调大了文字 */
             color: #fff;
             margin-bottom: 35px;
         }
@@ -93,6 +92,7 @@
         .options a {
             color: #ff4d4d;
             text-decoration: none;
+            font-weight: bold;
         }
 
         .checkbox-item {
@@ -102,10 +102,11 @@
         }
 
         .checkbox-item input {
-            margin-right: 8px;
-            width: 16px;
-            height: 16px;
+            margin-right: 10px;
+            width: 20px; /* 调大了勾选框 */
+            height: 20px; /* 调大了勾选框 */
             accent-color: #d4a017;
+            cursor: pointer;
         }
 
         .login-btn {
@@ -133,10 +134,19 @@
 
         .service {
             color: #fff;
-            text-decoration: underline;
+            text-decoration: none; /* 去掉下划线，改用背景感 */
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
             font-size: 14px;
             display: inline-block;
             margin-bottom: 10px;
+            transition: background 0.3s;
+        }
+
+        .service:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffcc00;
         }
 
         .copyright {
@@ -175,24 +185,21 @@
     <button class="login-btn" id="loginBtn">登 录</button>
 
     <div class="footer">
-        <a href="#" class="service">在线客服</a>
+        <a href="chat.html" class="service">🎧 在线客服</a>
         <p class="copyright">Copyright 2023-2035</p>
     </div>
 </div>
 
 <script>
-    // 登录跳转脚本
     document.getElementById('loginBtn').addEventListener('click', function() {
         const agree = document.getElementById('agree').checked;
         if (!agree) {
             alert("请先勾选并同意《服务与条款》");
             return;
         }
-        // 跳转到大厅
         window.location.href = 'home.html';
     });
 </script>
 
 </body>
-
 </html>
