@@ -87,6 +87,16 @@
             color: #300; border-color: #fff;
             box-shadow: 0 0 20px rgba(255,204,0,0.5);
         }
+
+        /* 专门为退出按钮设计的醒目样式 */
+        .nav-btn.exit-btn {
+            background: linear-gradient(to bottom, #800000, #400000);
+            border-color: #a00000;
+            margin-top: 25px;
+            font-size: 16px;
+            height: 48px;
+        }
+
         .nav-btn:active { transform: scale(0.96); }
 
         .game-grid {
@@ -139,7 +149,7 @@
             background: #000; 
             border: 2px solid var(--gold-main); 
             border-radius: 6px; 
-            overflow: hidden; /* 保证视频/图片不超出圆角边框 */
+            overflow: hidden; 
         }
 
         .brand-area {
@@ -174,7 +184,7 @@
             font-size: 13px; color: #8d6d4a; font-weight: bold;
         }
 
-        /* ==================== 游戏房间层 (完全保留) ==================== */
+        /* ==================== 游戏房间层 ==================== */
         #game-room-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; z-index: 9999; display: none; flex-direction: column;
@@ -323,6 +333,8 @@
                     <div class="nav-btn">龙虎</div>
                     <div class="nav-btn">牛牛</div>
                     <div class="nav-btn">多台下注</div>
+                    
+                    <div class="nav-btn exit-btn" onclick="quitGame()">安全退出</div>
                 </div>
             </div>
             <div class="game-grid">
@@ -367,7 +379,7 @@
         <div class="room-top-right-group">
             <div class="monitor-item" onclick="toggleView()">
                 <video id="monitor-preview" autoplay muted loop><source src="G01近.mp4" type="video/mp4"></video>
-                <div class="monitor-tag">切换视频</div>
+                <div class="monitor-tag">切换视角</div>
             </div>
 
             <div class="room-info-box"> 
@@ -425,13 +437,20 @@
     </div>
 
     <script>
+        /* 退出跳转逻辑 */
+        function quitGame() {
+            if(confirm("确定要退出并返回登录页面吗？")) {
+                window.location.href = "index.html"; 
+            }
+        }
+
         /* 在线客服跳转 */
         function openCustomerService() {
             const serviceUrl = "chat.html"; 
             window.open(serviceUrl, '_blank');
         }
 
-        /* 脚本逻辑 (完全保留) */
+        /* 核心逻辑部分 (完全恢复) */
         let currentChipValue = 100;
         let totalBetAmount = 0;
         let betHistory = []; 
@@ -501,5 +520,3 @@
     </script>
 </body>
 </html>
-
-
